@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV Cleaner</title>
+  <link rel="stylesheet" href="/static/output.css">
+    <style>
+    body { font-family: Tahoma, sans-serif; }
+    #drop-zone.drag-over { border-color: #570df8; background: #f0ebff; }
+    .fade-in { animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body class="bg-base-200 min-h-screen">
+
+  <div class="navbar bg-base-100 shadow-sm px-6">
+    <span class="text-xl font-bold">🧹 CSV Cleaner</span>
+  </div>
+
+  <div class="max-w-3xl mx-auto px-4 py-10">
+
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold mb-2">فایل CSV کثیف؟</h1>
+      <p class="text-base-content opacity-60">تکراری‌ها، خالی‌ها و مشکلات رو در چند ثانیه پاک کن</p>
+    </div>
+
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <div
+          id="drop-zone"
+          class="border-2 border-dashed border-base-300 rounded-2xl p-12 text-center cursor-pointer transition-all"
+          onclick="document.getElementById('file-input').click()"
+        >
+          <div class="text-5xl mb-3">📂</div>
+          <p class="font-medium text-lg">فایل CSV رو اینجا بنداز</p>
+          <p class="text-sm mt-1 opacity-50">یا کلیک کن برای انتخاب</p>
+          <input type="file" id="file-input" accept=".csv" class="hidden" onchange="uploadFile(this.files[0])">
+        </div>
+
+        <div id="loading" class="hidden text-center py-6 fade-in">
+          <span class="loading loading-spinner loading-lg text-primary"></span>
+          <p class="mt-3 opacity-60">در حال پردازش...</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="result" class="hidden fade-in mt-6 space-y-4">
+
+      <div class="stats shadow w-full bg-base-100">
+        <div class="stat">
+          <div class="stat-title">ردیف قبل</div>
+          <div class="stat-value text-primary" id="rows-before">-</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">ردیف بعد</div>
+          <div class="stat-value text-success" id="rows-after">-</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">تکراری حذف شد</div>
+          <div class="stat-value text-warning" id="duplicates">-</div>
+        </div>
+        <div class="stat">
+          <div class="stat-title">مقادیر خالی</div>
+          <div class="stat-value text-error" id="nulls-total">-</div>
+        </div>
+      </div>
+
+      <div class="card bg-base-100 shadow">
+        <div class="card-body">
+          <h2 class="card-title text-base">پیش‌نمایش داده تمیز</h2>
+          <div class="overflow-x-auto">
+            <table class="table table-zebra table-sm" id="preview-table"></table>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary w-full btn-lg" onclick="downloadCSV()">
+        ⬇️ دانلود CSV تمیز
+      </button>
+
+    </div>
+
+    <div id="error-alert" class="hidden alert alert-error mt-4 fade-in">
+      <span id="error-msg"></span>
+    </div>
+
+  </div>
+
+  <script>
+    let cleanedCSV = "";
+
+    const dropZone = document.getElementById("drop-zone");
+    dropZone.addEventListener("dragover", e => { e.preventDefault(); dropZone.classList.add("drag-over"); });
+    dropZone.addEventListener("dragleave", () => dropZone.classList.remove("drag-over"));
+    dropZone.addEventListener("drop", e => {
+      e.preventDefault();
+      dropZone.classList.remove("drag-over");
+      uploadFile(e.dataTransfer.files[0]);
+    });
+
+    async function uploadFile(file) {
+      if (!file) return;
+      document.getElementById("loading").classList.remove("hidden");
+      document.getElementById("result").classList.add("hidden");
+      document.getElementById("error-alert").classList.add("hidden");
+
+      try {
+        const form = new FormData();
+        form.append("file", file);
+        const res = await fetch("http://127.0.0.1:8000/clean", { method: "POST", body: form });
+        if (!res.ok) throw new Error("خطا در پردازش فایل");
+        const data = await res.json();
+
+        cleanedCSV = data.csv;
+        document.getElementById("rows-before").textContent = data.report.rows_before;
+        document.getElementById("rows-after").textContent = data.report.rows_after;
+        document.getElementById("duplicates").textContent = data.report.duplicates;
+
+        const totalNulls = Object.values(data.report.nulls).reduce((a, b) => a + b, 0);
+        document.getElementById("nulls-total").textContent = totalNulls;
+
+        const cols = Object.keys(data.preview);
+        const keys = Object.keys(data.preview[cols[0]]);
+        let html = "<thead><tr>" + cols.map(c => `<th>${c}</th>`).join("") + "</tr></thead><tbody>";
+        for (const key of keys) {
+          html += "<tr>" + cols.map(c => `<td>${data.preview[c][key] ?? "-"}</td>`).join("") + "</tr>";
+        }
+        html += "</tbody>";
+        document.getElementById("preview-table").innerHTML = html;
+
+        document.getElementById("loading").classList.add("hidden");
+        document.getElementById("result").classList.remove("hidden");
+
+      } catch (err) {
+        document.getElementById("loading").classList.add("hidden");
+        document.getElementById("error-msg").textContent = err.message;
+        document.getElementById("error-alert").classList.remove("hidden");
+      }
+    }
+
+    function downloadCSV() {
+      const blob = new Blob([cleanedCSV], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "cleaned.csv";
+      a.click();
+    }
+  </script>
+</body>
+</html>
