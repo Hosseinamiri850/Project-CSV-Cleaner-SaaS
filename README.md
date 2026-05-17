@@ -22,7 +22,7 @@
 
 **۱ — clone کن:**
 ```bash
-git clone https://github.com/yourusername/csv-cleaner.git
+git clone https://github.com/Hosseinamiri850/Project-CSV-Cleaner-SaaS.git
 cd csv-cleaner
 ```
 
@@ -126,7 +126,7 @@ An automated CSV cleaning tool built with Python and FastAPI.
 
 **1 — Clone the repo:**
 ```bash
-git clone https://github.com/yourusername/csv-cleaner.git
+git clone https://github.com/Hosseinamiri850/Project-CSV-Cleaner-SaaS.git
 cd csv-cleaner
 ```
 
