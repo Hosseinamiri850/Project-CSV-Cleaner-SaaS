@@ -1,82 +1,86 @@
 # PROJECT_STRUCTURE.md
 
-ساختار کامل فایل‌های پروژه CSV Cleaner SaaS.
+Full file structure of the CSV Cleaner SaaS project.
 
 ---
 
-## درخت فایل‌ها
+## File Tree
 
 ```
 Project CSV Cleaner SaaS/
 │
-├── main.py                    # FastAPI app — نقطه ورود backend
-├── ai_cleaning.py             # AI integration (فعلاً placeholder)
+├── main.py                    # FastAPI app — backend entry point
+├── ai_cleaning.py             # AI integration (placeholder for now)
 │
 ├── requirements.txt           # Python dependencies
-├── .env                       # API keys — هرگز commit نکن
-├── .gitignore                 # فایل‌های ignore شده از git
+├── .env                       # API keys — never commit
+├── .gitignore                 # Files excluded from git
+├── .graphifyignore            # Files excluded from graphify
 │
-├── README.md                  # مستندات اصلی (فارسی + انگلیسی)
-├── CLAUDE.md                  # راهنمای Claude برای این پروژه
-├── MEMORY.md                  # تاریخچه تصمیمات و context
-├── CHANGELOG.md               # تاریخچه تغییرات
-├── DESIGN.md                  # مستندات UI/UX
+├── README.md                  # Main docs (Farsi + English)
+├── CLAUDE.md                  # Claude guidance file
+├── MEMORY.md                  # Decision history and context
+├── CHANGELOG.md               # Change history
+├── DESIGN.md                  # UI/UX documentation
 ├── PRD.md                     # Product Requirements Document
-├── PROJECT_STRUCTURE.md       # این فایل
+├── PROJECT_STRUCTURE.md       # This file
 │
-├── venv/                      # Python virtual environment (git ignore)
-│   └── ...
+├── docs/
+│   └── csv_cleaner_structure.png   # Architecture diagram
 │
+├── graphify-out/              # graphify output (git ignored)
+│   ├── graph.json             # Knowledge graph (8 nodes, 11 edges)
+│   └── .graphify_analysis.json
+│
+├── venv/                      # Python virtual environment (git ignored)
 └── frontend/
     ├── package.json           # Node.js config
-    ├── node_modules/          # npm packages (git ignore)
-    │   └── ...
+    ├── node_modules/          # npm packages (git ignored)
     └── src/
         ├── index.html         # Single-page UI
         ├── input.css          # Tailwind + DaisyUI source
-        └── output.css         # CSS build شده — serve می‌شه
+        └── output.css         # Built CSS — served to browser
 ```
 
 ---
 
-## توضیح فایل‌های کلیدی
+## Key File Details
 
 ### `main.py`
 
 ```python
 # Routes:
 GET  /        → FileResponse("frontend/src/index.html")
-POST /clean   → پردازش CSV و برگشت JSON
-GET  /static  → StaticFiles از frontend/src/
+POST /clean   → processes CSV, returns JSON
+GET  /static  → StaticFiles from frontend/src/
 ```
 
-**وابستگی‌ها**: `ai_cleaning.py`
+**Functions**: `clean_value()`, `clean_dict()`, `root()`, `clean_csv()`
 
 ---
 
 ### `ai_cleaning.py`
 
-یه تابع async که sample از CSV می‌گیره و پیشنهاد AI برمی‌گردونه.
-
 ```python
-async def ai_suggest(df_sample: str) -> str
+async def ai_suggest(df_sample: str) -> str:
+    return "AI feature coming soon."
 ```
 
-فعلاً placeholder — بعداً به Gemini یا Anthropic وصل می‌شه.
+Placeholder only — will connect to Gemini or Anthropic after billing is set up.
 
 ---
 
 ### `frontend/src/index.html`
 
-Single-page app — همه UI توی یه فایل:
-- Drag & drop zone
-- Loading spinner
+Single-page app with all UI in one file:
+- Drag & drop upload zone
+- Loading spinner (DaisyUI)
 - Stats cards (DaisyUI `stats`)
-- Preview table (DaisyUI `table-zebra`)
+- Data preview table (DaisyUI `table-zebra`)
 - Download button
 - Error alert
 
-با `fetch("http://127.0.0.1:8000/clean")` به backend وصل می‌شه.
+Connects to backend via `fetch("http://127.0.0.1:8000/clean")`.
 
 ---
 
@@ -89,18 +93,21 @@ Single-page app — همه UI توی یه فایل:
 }
 ```
 
-با `npm run build` به `output.css` کامپایل می‌شه.
+Compiled to `output.css` by running `npm run build`.
 
 ---
 
-### `.env`
+### `.graphifyignore`
 
 ```
-ANTHROPIC_API_KEY=sk-ant-xxxxx
-GEMINI_API_KEY=AIza-xxxxx
+venv/
+node_modules/
+frontend/
+__pycache__/
+graphify-out/
+requirements.txt
+test.csv
 ```
-
-با `python-dotenv` لود می‌شه. هرگز commit نکن.
 
 ---
 
@@ -109,26 +116,24 @@ GEMINI_API_KEY=AIza-xxxxx
 ```
 [Browser]
     │
-    │ drag & drop CSV file
+    │  drag & drop CSV file
     ▼
 [frontend/src/index.html]
     │
-    │ POST /clean (multipart/form-data)
+    │  POST /clean (multipart/form-data)
     ▼
 [main.py → clean_csv()]
-    │
     ├── pandas: read_csv()
     ├── pandas: drop_duplicates()
     ├── pandas: dropna(thresh=50%)
-    ├── pandas: normalize columns
-    │
-    ├── ai_cleaning.py: ai_suggest()  ← placeholder
+    ├── pandas: normalize column names
+    ├── clean_value() / clean_dict()  →  NaN to None
+    └── ai_cleaning.py: ai_suggest()  →  placeholder
     │
     └── return JSON {report, ai_notes, preview, csv}
     │
     ▼
 [frontend/src/index.html]
-    │
     ├── render stats cards
     ├── render preview table
     └── enable download button
@@ -147,14 +152,14 @@ GEMINI_API_KEY=AIza-xxxxx
 
 ---
 
-## Python Dependencies
+## graphify Knowledge Graph
 
-```
-fastapi
-uvicorn
-pandas
-anthropic
-python-multipart
-python-dotenv
-aiofiles
-```
+Last run: 2026-06-17
+- **4 code files** found (with `--code-only`)
+- **8 nodes**, **11 edges**, **3 communities**
+
+| Community | Contains |
+|-----------|---------|
+| 0 | main.py, ai_cleaning.py, ai_suggest(), root() |
+| 1 | clean_csv(), UploadFile |
+| 2 | clean_value(), clean_dict() |

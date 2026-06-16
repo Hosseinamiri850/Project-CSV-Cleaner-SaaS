@@ -2,7 +2,25 @@
 
 All notable changes to CSV Cleaner SaaS are documented here.
 
-Format: `[version] - date - description`
+---
+
+## [0.2.0] - 2026-06-17 — Documentation & Tooling
+
+### Added
+- `CLAUDE.md` — Claude guidance file for this project
+- `MEMORY.md` — Architecture decisions and context
+- `CHANGELOG.md` — This file
+- `DESIGN.md` — UI/UX documentation
+- `PRD.md` — Product Requirements Document
+- `PROJECT_STRUCTURE.md` — Full project structure reference
+- `docs/csv_cleaner_structure.png` — Architecture diagram
+- Architecture diagram added to README (both languages)
+- graphify installed and knowledge graph generated
+- `.graphifyignore` to exclude non-essential files from graph
+- Initial push to GitHub
+
+### Changed
+- README updated with diagram and correct clone URL
 
 ---
 
@@ -21,20 +39,20 @@ Format: `[version] - date - description`
 - Frontend: stats cards (rows before/after, duplicates, nulls)
 - Frontend: zebra table preview
 - Frontend: download button for cleaned CSV
-- DaisyUI + Tailwind CSS v4 styling
+- DaisyUI + Tailwind CSS v4 (local install, no CDN)
 - FastAPI serves frontend statically at `/`
-- AI placeholder (`ai_cleaning.py`) — returns "coming soon"
+- AI placeholder in `ai_cleaning.py` — returns "coming soon"
 
 ### Fixed
 - `NaN` values converted to `None` for JSON compliance
 - PowerShell execution policy workaround documented
-- DaisyUI build via `@plugin` in `input.css` (Tailwind v4 compatible)
+- DaisyUI builds correctly via `@plugin` in `input.css` (Tailwind v4)
 
 ### Known Issues
 - AI feature disabled (needs API key with billing)
 - No authentication
 - No usage limits
-- CORS open — must restrict before production
+- CORS is open — must restrict before production
 
 ---
 
@@ -48,4 +66,4 @@ Format: `[version] - date - description`
 - Usage limits per plan (Free: 5 files/month, Starter: 50, Pro: unlimited)
 - AI suggestions via Gemini or Anthropic API
 - Rate limiting
-- File size validation
+- File size validation (max 10MB)
