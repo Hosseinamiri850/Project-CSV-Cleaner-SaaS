@@ -7,3 +7,4 @@ requirements.txt
 test.csv
 frontend/
 *.md
+docs/

@@ -18,12 +18,16 @@
 - دانلود CSV تمیز شده
 - پشتیبانی از AI (به زودی)
 
+### معماری پروژه
+
+![ساختار پروژه CSV Cleaner SaaS](docs/csv_cleaner_structure.png)
+
 ### نصب و راه‌اندازی
 
 **۱ — clone کن:**
 ```bash
 git clone https://github.com/Hosseinamiri850/Project-CSV-Cleaner-SaaS.git
-cd csv-cleaner
+cd Project-CSV-Cleaner-SaaS
 ```
 
 **۲ — virtualenv بساز:**
@@ -61,12 +65,14 @@ http://127.0.0.1:8000
 ### ساختار پروژه
 
 ```
-csv-cleaner/
+Project-CSV-Cleaner-SaaS/
 ├── main.py              # FastAPI backend
 ├── ai_cleaning.py       # AI integration
 ├── requirements.txt     # Python dependencies
 ├── .env                 # API keys (گیت نمیگیره)
 ├── .gitignore
+├── docs/
+│   └── csv_cleaner_structure.png
 └── frontend/
     └── src/
         ├── index.html   # UI
@@ -105,6 +111,10 @@ file: <csv file>
 
 An automated CSV cleaning tool built with Python and FastAPI.
 
+### Architecture
+
+![CSV Cleaner SaaS Architecture](docs/csv_cleaner_structure.png)
+
 ### Features
 
 - Remove duplicate rows
@@ -127,7 +137,7 @@ An automated CSV cleaning tool built with Python and FastAPI.
 **1 — Clone the repo:**
 ```bash
 git clone https://github.com/Hosseinamiri850/Project-CSV-Cleaner-SaaS.git
-cd csv-cleaner
+cd Project-CSV-Cleaner-SaaS
 ```
 
 **2 — Create virtualenv:**
@@ -165,12 +175,14 @@ http://127.0.0.1:8000
 ### Project Structure
 
 ```
-csv-cleaner/
+Project-CSV-Cleaner-SaaS/
 ├── main.py              # FastAPI backend
 ├── ai_cleaning.py       # AI integration
 ├── requirements.txt     # Python dependencies
 ├── .env                 # API keys (not tracked by git)
 ├── .gitignore
+├── docs/
+│   └── csv_cleaner_structure.png
 └── frontend/
     └── src/
         ├── index.html   # UI
