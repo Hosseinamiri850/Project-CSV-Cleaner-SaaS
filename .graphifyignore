@@ -1,0 +1,9 @@
+venv/
+node_modules/
+frontend/src/output.css
+__pycache__/
+graphify-out/
+requirements.txt
+test.csv
+frontend/
+*.md
